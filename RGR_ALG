@@ -1,0 +1,191 @@
+using System.Xml.Linq;
+
+namespace RGR_AL
+{
+    class Help
+    {
+        public static void ojid()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("НАЖМИТЕ КНОПКУ, ЧТОБЫ ВЕРНУТЬСЯ");
+            Console.ResetColor();
+            Console.ReadKey(true);
+        }
+        public static void error()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("ДАННЫЕ ВВЕДЕНЫ НЕВЕРНО! ПОПРОБУЙ ЕЩЁ РАЗ");
+            Console.WriteLine("НАЖМИТЕ КНОПКУ, ЧТОБЫ ВЕРНУТЬСЯ");
+            Console.ResetColor();
+            Console.ReadKey(true);
+        }
+        public static string probel(string str)
+        {
+            while (str.Contains("  ")) { str = str.Replace("  ", " "); }
+            str = str.TrimStart(new char[] { ' ' });
+            return str;
+        }
+    }
+    class rgr_aL 
+    { 
+        static void Main()
+        {
+            List<string> list_file = new List<string>();
+            string path = @"C:\Users\admin\Desktop\1.txt";
+            using (StreamReader file = File.OpenText(path))
+            {
+                string line = "";
+                while ((line = file.ReadLine()) != null)
+                {
+                    list_file.Add(line);
+                }
+            }
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(@"1-Поиск витамина
+2-Вывод данных о всех витаминах
+3-Добавить витамин
+4-Редактирование
+5-Удалить запись о витамине
+6-Выход");
+                try 
+                {
+                    string code = Console.ReadLine();
+                    switch (code) 
+                    {
+                        case "1": Console.Clear(); Serch(list_file); break;
+                        case "2": Console.Clear(); All(list_file); break;
+                        case "3": Console.Clear(); ADD(ref list_file); break;
+                        case "4": Console.Clear(); Editor(ref list_file); break;
+                        case "5": Console.Clear(); Delete(ref list_file); break;
+                        case "6": Console.Clear(); exit(list_file, path); break;
+                    }
+                }
+                catch
+                {
+                    Help.error();
+                }
+                
+            }
+        }
+        static void ADD(ref List<string> list_file)
+        {
+            Console.Clear();
+            Console.Write("Введите название витамина или микроэлемента: ");
+            string name = Console.ReadLine();
+            Console.Write("Введите свойства и описание витамина: ");
+            string discription = Console.ReadLine();
+            Console.Write("Введите продукты в которых содержиться витамин: ");
+            string food = Console.ReadLine();
+
+            name = Help.probel(name);
+            discription = Help.probel(discription);
+            food = Help.probel(food);
+            if (name != string.Empty)
+            { 
+                list_file.Add(name + "  " + discription + "  " + food);
+                Help.ojid();
+            }
+            else
+            {
+                Help.error();
+            }
+        }
+        static void Delete(ref List<string> list_file)
+        {
+            Console.Write("Введите название витамина или микроэлемента, информацию о котором хотитие удалить: ");
+            string name = Console.ReadLine();
+            name = Help.probel(name);
+            if(name != string.Empty)
+            { 
+                foreach (string line in list_file)
+                {
+                    if (line.Contains(name))
+                    {
+                        list_file.Remove(line);
+                        Help.ojid();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Help.error();
+            }
+        }
+        static void Serch(List<string> list_file)
+        {
+            Console.Write("Введите название витамина или микроэлемента, который хотите найти: ");
+            string name = Console.ReadLine();
+            name = Help.probel(name);
+            if (name != string.Empty)
+            {
+
+                foreach (string line in list_file)
+                {
+                    if (line.Contains(name))
+                    {
+                        Console.WriteLine(line);
+                        Help.ojid();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Help.error();
+            }
+        }
+        static void Editor(ref List<string> list_file)
+        {
+            Console.Write("Введите название витамина или микроэлемента, который вы хотите отредактировать: ");
+            string name = Console.ReadLine();
+            name = Help.probel(name);
+            if (name != string.Empty)
+            {
+
+                foreach (string line in list_file)
+                {
+                    if (line.Contains(name))
+                    {
+                        line.Split("  ");
+                        Console.Write("Введите свойства и описание витамина: ");
+                        string discription = Console.ReadLine();
+                        Console.Write("Введите продукты в которых содержиться витамин: ");
+                        string food = Console.ReadLine();
+                        discription = Help.probel(discription);
+                        food = Help.probel(food);
+                        list_file[list_file.IndexOf(line)] = name + "  " + discription + "  " + food;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Help.error();
+            }
+        }
+        static void All(List<string> list_file)
+        {
+            foreach (string line in list_file)
+            {
+                Console.WriteLine(line);
+            }
+            Help.ojid();
+        }
+        static void exit(List<string> list_file, string path)
+        {
+            using (StreamWriter file = File.CreateText(path))
+            {
+                foreach(string line in list_file)
+                {
+                    file.WriteLine(line);
+                }
+            }
+            Environment.Exit(0);
+        }
+    }
+}
